@@ -5,16 +5,56 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
-    todoText: []
+    todoText: [],
+    todolength: 0,
+    completedTodo: []
   },
   mutations: {
     SAVE_TODO(state, value) {
-      state.todoText.push(value);
+      var date = new Date();
+      console.log(value);
+      state.todoText.unshift({
+        value: value,
+        id: date.getTime(),
+        completed: false
+      });
+      state.todolength = state.todoText.length;
+    },
+    COMPLETED_TODO(state, item) {
+      state.todoText.filter(todo => {
+        if (todo.id === item.id) {
+          todo.completed = !todo.completed;
+          if (todo.completed && !state.completedTodo.includes(todo)) {
+            state.completedTodo.unshift(todo);
+          }
+          console.log("added");
+        }
+      });
+      console.log(state.todoText);
+    },
+    DELETE_TODO(state, item) {
+      const index = state.todoText.indexOf(item);
+      state.todoText.splice(index, 1);
+      if (state.completedTodo.length) {
+        state.completedTodo.filter(todo => {
+          if (todo.id === item.id) {
+            state.completedTodo.splice(state.completedTodo.indexOf(todo), 1);
+          }
+        });
+        console.log("deleted sucessfully");
+      }
     }
   },
   actions: {
+    deletetodo({ commit }, item) {
+      commit("DELETE_TODO", item);
+    },
     saveTodo({ commit }, value) {
+      console.log(value);
       commit("SAVE_TODO", value);
+    },
+    completetodo({ commit }, item) {
+      commit("COMPLETED_TODO", item);
     }
   }
 });
