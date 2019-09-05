@@ -2,6 +2,7 @@
   <div id="app">
     <router-link :to="{ name: 'home' }"></router-link>
     <router-link :to="{ name: 'signIn' }"></router-link>
+    <router-link :to="{ name: 'signUp' }"></router-link>
     <router-view />
   </div>
 </template>

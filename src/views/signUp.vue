@@ -1,7 +1,18 @@
 <template>
   <div class="form">
     <img src="@/assets/loginlogo.jpeg" alt="login-image" class="logoicon" />
-    <form @submit.prevent>
+    <form action="submit">
+      <div class="form-tag">
+        <p id="login-title">Login</p>
+        <label for="name">
+          <i class="fa fa-envelope"></i>
+          <input
+            type="text"
+            name="name"
+            v-model.trim="name"
+            id="name"
+            placeholder="username"
+          />
       <div class="form-tag">
         <p id="login-title">Login</p>
         <label for="email">
@@ -9,8 +20,8 @@
           <input
             type="email"
             name="email"
-            id="email"
             v-model.trim="email"
+            id="email"
             placeholder="enter your email"
           />
         </label>
@@ -21,40 +32,49 @@
           <input
             type="password"
             name="password"
+            v-model.trim="password"
             id="password"
             placeholder="password"
           />
         </label>
       </div>
-      <button id="loginbutton" @click="login">login</button>
+      <button id="loginbutton" @click="singup">Sign Up</button>
       <p>
-        don't have an account?
-        <router-link :to="{ name: 'signUp' }" class="link"
-          >create new!</router-link
-        >
+        back to
+        <router-link :to="{ name: 'signIn' }" class="link">login!</router-link>
       </p>
     </form>
   </div>
 </template>
 
 <script>
-const fb = require("../components/firebaseConfig");
-
 export default {
   data() {
     return {
+      name: "",
       email: "",
       password: ""
     };
   },
   methods: {
-    login() {
+    signup() {
       fb.auth
-        .signInWithEmailAndPassword(this.email, this.password)
+        .createUserWithEmailAndPassword(this.email, this.password)
         .then(user => {
-          this.$store.commit("setCurrentUser", user.user);
-          this.$store.dispatch("fetchUserProfile");
-          this.$router.push("/dashboard");
+          this.$store.commit("setCurrentUser", user);
+          // create user obj
+          fb.usersCollection
+            .doc(user.uid)
+            .set({
+              name: thisname
+            })
+            .then(() => {
+              this.$store.dispatch("fetchUserProfile");
+              this.$router.push("/dashboard");
+            })
+            .catch(err => {
+              console.log(err);
+            });
         })
         .catch(err => {
           console.log(err);
