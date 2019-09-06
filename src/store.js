@@ -1,15 +1,12 @@
 import Vue from "vue";
 import Vuex from "vuex";
-const fb = require("./components/firebaseConfig.js");
 Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
     todoText: [],
     todolength: 0,
-    completedTodo: [],
-    currentUser: null,
-    userProfile: {}
+    completedTodo: []
   },
   mutations: {
     SAVE_TODO(state, value) {
@@ -45,12 +42,6 @@ export default new Vuex.Store({
         });
         console.log("deleted sucessfully");
       }
-    },
-    setCurrentUser(state, val) {
-      state.currentUser = val;
-    },
-    setUserProfile(state, val) {
-      state.userProfile = val;
     }
   },
   actions: {
@@ -63,17 +54,6 @@ export default new Vuex.Store({
     },
     completetodo({ commit }, item) {
       commit("COMPLETED_TODO", item);
-    },
-    fetchUserProfile({ commit, state }) {
-      fb.usersCollection
-        .doc(state.currentUser.uid)
-        .get()
-        .then(res => {
-          commit("setUserProfile", res.data());
-        })
-        .catch(err => {
-          console.log(err);
-        });
     }
   }
 });

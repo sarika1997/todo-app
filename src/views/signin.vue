@@ -1,7 +1,7 @@
 <template>
   <div class="form">
     <img src="@/assets/loginlogo.jpeg" alt="login-image" class="logoicon" />
-    <form @submit.prevent>
+    <form @submit.prevent="login">
       <div class="form-tag">
         <p id="login-title">Login</p>
         <label for="email">
@@ -22,11 +22,12 @@
             type="password"
             name="password"
             id="password"
+            v-model="password"
             placeholder="password"
           />
         </label>
       </div>
-      <button id="loginbutton" @click="login">login</button>
+      <button id="loginbutton">login</button>
       <p>
         don't have an account?
         <router-link :to="{ name: 'signUp' }" class="link"
@@ -38,26 +39,27 @@
 </template>
 
 <script>
-const fb = require("../components/firebaseConfig");
-
+import firebase from "firebase";
 export default {
   data() {
     return {
       email: "",
-      password: ""
+      password: "",
+      successMessage: "",
+      errorMessage: ""
     };
   },
   methods: {
     login() {
-      fb.auth
+      firebase
+        .auth()
         .signInWithEmailAndPassword(this.email, this.password)
         .then(user => {
-          this.$store.commit("setCurrentUser", user.user);
-          this.$store.dispatch("fetchUserProfile");
-          this.$router.push("/dashboard");
+          console.log(user);
         })
         .catch(err => {
           console.log(err);
+          this.errorMessage = err.message;
         });
     }
   }

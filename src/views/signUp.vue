@@ -1,26 +1,27 @@
 <template>
   <div class="form">
     <img src="@/assets/loginlogo.jpeg" alt="login-image" class="logoicon" />
-    <form action="submit">
+    <form @submit.prevent="registerUser">
+      <p id="login-title">Login</p>
       <div class="form-tag">
-        <p id="login-title">Login</p>
-        <label for="name">
+        <label for="username">
           <i class="fa fa-envelope"></i>
           <input
             type="text"
-            name="name"
-            v-model.trim="name"
-            id="name"
+            name="username"
+            v-model.trim="userData.username"
+            id="username"
             placeholder="username"
           />
+        </label>
+      </div>
       <div class="form-tag">
-        <p id="login-title">Login</p>
         <label for="email">
           <i class="fa fa-envelope"></i>
           <input
             type="email"
             name="email"
-            v-model.trim="email"
+            v-model.trim="userData.email"
             id="email"
             placeholder="enter your email"
           />
@@ -32,13 +33,13 @@
           <input
             type="password"
             name="password"
-            v-model.trim="password"
+            v-model.trim="userData.password"
             id="password"
             placeholder="password"
           />
         </label>
       </div>
-      <button id="loginbutton" @click="singup">Sign Up</button>
+      <button id="loginbutton">Sign Up</button>
       <p>
         back to
         <router-link :to="{ name: 'signIn' }" class="link">login!</router-link>
@@ -48,36 +49,57 @@
 </template>
 
 <script>
+import firebase from "firebase";
+import db from "../firestore";
 export default {
   data() {
     return {
-      name: "",
-      email: "",
-      password: ""
+      userData: {
+        username: "",
+        email: "",
+        password: ""
+      },
+      successMessage: "",
+      errorMessage: ""
     };
   },
   methods: {
-    signup() {
-      fb.auth
-        .createUserWithEmailAndPassword(this.email, this.password)
-        .then(user => {
-          this.$store.commit("setCurrentUser", user);
-          // create user obj
-          fb.usersCollection
-            .doc(user.uid)
-            .set({
-              name: thisname
+    registerUser() {
+      firebase
+        .auth()
+        .createUserWithEmailAndPassword(
+          this.userData.email,
+          this.userData.password
+        )
+        .then(() => {
+          firebase
+            .auth()
+            .currentUser.updateProfile({
+              displayName: this.userData.username
             })
             .then(() => {
-              this.$store.dispatch("fetchUserProfile");
-              this.$router.push("/dashboard");
+              db.collection("users")
+                .add({
+                  username: this.userData.username,
+                  email: this.userData.email,
+                  password: this.userData.password
+                })
+                .then(() => {
+                  this.$router.replace("/home"); //path
+                })
+                .catch(err => {
+                  console.log(err);
+                  this.errorMessage = err.message;
+                });
             })
             .catch(err => {
               console.log(err);
+              this.errorMessage = err.message;
             });
         })
         .catch(err => {
           console.log(err);
+          this.errorMessage = err.message;
         });
     }
   }
@@ -117,7 +139,8 @@ i {
   box-shadow: 2.6px 2.4px rgba(107, 105, 105, 0.637);
 }
 #email,
-#password {
+#password,
+#username {
   width: 230px;
   height: 24px;
   border-radius: 16px;
