@@ -9,9 +9,6 @@
         placeholder="enter your todo's"
         @keyup.enter="saveTodo"
       />
-      <button :disabled="todolength ? false : true" @click="addToFireStore">
-        add
-      </button>
     </label>
     <template v-if="todolength">
       <TodoList @delete-todo="deletetodo" v-if="listvisible" />
@@ -69,9 +66,6 @@ export default {
     showAll() {
       this.listvisible = true;
       this.showcompletedlist = false;
-    },
-    addToFireStore() {
-      this.$store.dispatch("addToFireStore");
     }
   },
   computed: {

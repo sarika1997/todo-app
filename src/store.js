@@ -14,7 +14,7 @@ export default new Vuex.Store({
     currentUser: null
   },
   mutations: {
-    SAVE_TODO(state, value) {
+    async SAVE_TODO(state, value) {
       var date = new Date();
       console.log(value);
       state.todoText.unshift({
@@ -22,7 +22,16 @@ export default new Vuex.Store({
         id: date.getTime(),
         completed: false
       });
-
+      await db
+        .collection("users")
+        .doc(firebase.auth().currentUser.uid)
+        .collection("todos")
+        .add({
+          value: value,
+          id: date.getTime(),
+          completed: false
+        });
+      console.log("added todo to firestore successfully");
       state.todolength = state.todoText.length;
     },
     COMPLETED_TODO(state, item) {
@@ -49,23 +58,26 @@ export default new Vuex.Store({
         console.log("deleted sucessfully");
       }
     },
-    UPDATE_LOGIN(state, userInfo) {
+    async UPDATE_LOGIN(state, userInfo) {
       console.log("is logged");
+      console.log(state.todoText);
       state.isLoggedIn = !state.isLoggedIn;
       state.currentUser = userInfo;
+      if (state.isLoggedIn) {
+        const ref = await db
+          .collection("users")
+          .doc(userInfo.uid)
+          .collection("todos")
+          .get();
 
+        console.log(ref);
+        ref.docs.map(document => {
+          state.todoText.push(document.data());
+        });
+      }
+      console.log(state.todoText);
       console.log(userInfo);
       console.log(state.isLoggedIn);
-    },
-    ADD_TO_FIRESTORE(state) {
-      db.collection("users")
-        .doc(firebase.auth().currentUser.uid)
-        .collection("todos")
-        .add({
-          todoList: state.todoText,
-          completedTodo: state.completedTodo
-        });
-      console.log("added to firestore successfully");
     }
   },
   actions: {
@@ -81,9 +93,6 @@ export default new Vuex.Store({
     },
     loggedUpdate({ commit }, userInfo) {
       commit("UPDATE_LOGIN", userInfo);
-    },
-    addToFireStore({ commit }) {
-      commit("ADD_TO_FIRESTORE");
     }
   }
 });
