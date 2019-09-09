@@ -4,9 +4,10 @@ import todo from "@/components/todo.vue";
 import Home from "@/views/Home.vue";
 import SignIn from "@/views/signIn.vue";
 import SignUp from "@/views/signUp.vue";
+import firebase from "firebase";
 Vue.use(Router);
 
-export default new Router({
+let router = new Router({
   mode: "history",
   base: process.env.BASE_URL,
   routes: [
@@ -21,17 +22,52 @@ export default new Router({
     {
       path: "/todo",
       name: "todo",
-      component: todo
+      component: todo,
+      meta: {
+        requiresAuth: true
+      }
     },
     {
       path: "*",
       name: "signIn",
-      component: SignIn
+      component: SignIn,
+      meta: {
+        requiresGuest: true
+      }
     },
     {
       path: "/signUp",
       name: "signUp",
-      component: SignUp
+      component: SignUp,
+      meta: {
+        requiresGuest: true
+      }
     }
   ]
 });
+router.beforeEach((to, from, next) => {
+  if (to.matched.some(record =>
+    record.meta.requiresAuth
+  )) {
+    if (!firebase.auth().currentUser) {
+      next({
+        name: "signIn",
+        query: to.fullPath
+      })
+    } else {
+      next();
+    }
+  } else if (to.matched.some(record =>
+    record.meta.requiresGuest
+  )) {
+    if (!firebase.auth().currentUser) {
+      next({
+        name: "signIn",
+        query: to.fullPath
+      })
+    } else {
+      next();
+    }
+  }
+})
+export default router;

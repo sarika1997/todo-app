@@ -7,11 +7,12 @@
 <script>
 import todo from "@/components/todo.vue";
 export default {
+  name: "home",
   components: {
     todo
   },
-  created(){
-    console.log("======created")
+  created() {
+    console.log("======created");
   }
 };
 </script>

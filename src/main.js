@@ -2,26 +2,18 @@ import Vue from "vue";
 import App from "./App.vue";
 import router from "./router";
 import store from "./store";
-import firebase from "firebase";
+import firebase from "firebase"
+import "./firestore";
 
 Vue.config.productionTip = false;
-
-router.beforeEach((to, from, next) => {
-  const currentUser = firebase.auth().currentUser;
-  const requireAuth = to.matched.some(record => {
-    record.meta.requiresAuth;
-  });
-  if (requireAuth && !currentUser) {
-    next("/signIn");
-  } else if (!requireAuth && currentUser) {
-    next("home");
-  } else {
-    next();
+let app;
+firebase.auth().onAuthStateChanged(user => {
+  if (!app) {
+    app = new Vue({
+      router,
+      store,
+      render: h => h(App)
+    }).$mount("#app");
   }
-});
+})
 
-new Vue({
-  router,
-  store,
-  render: h => h(App)
-}).$mount("#app");

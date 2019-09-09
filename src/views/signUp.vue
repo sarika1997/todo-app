@@ -50,8 +50,8 @@
 
 <script>
 import firebase from "firebase";
-import db from "../firestore";
 export default {
+  name: "signUp",
   data() {
     return {
       userData: {
@@ -71,35 +71,13 @@ export default {
           this.userData.email,
           this.userData.password
         )
-        .then(() => {
-          firebase
-            .auth()
-            .currentUser.updateProfile({
-              displayName: this.userData.username
-            })
-            .then(() => {
-              db.collection("users")
-                .add({
-                  username: this.userData.username,
-                  email: this.userData.email,
-                  password: this.userData.password
-                })
-                .then(() => {
-                  this.$router.replace("/home"); //path
-                })
-                .catch(err => {
-                  console.log(err);
-                  this.errorMessage = err.message;
-                });
-            })
-            .catch(err => {
-              console.log(err);
-              this.errorMessage = err.message;
-            });
+        .then(user => {
+          console.log(user);
+          this.$router.push("home");
         })
         .catch(err => {
-          console.log(err);
           this.errorMessage = err.message;
+          console.log("err", err);
         });
     }
   }

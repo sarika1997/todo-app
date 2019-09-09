@@ -30,9 +30,7 @@
       <button id="loginbutton">login</button>
       <p>
         don't have an account?
-        <router-link :to="{ name: 'signUp' }" class="link"
-          >create new!</router-link
-        >
+        <router-link :to="{ name: 'signUp' }" class="link">create new!</router-link>
       </p>
     </form>
   </div>
@@ -41,6 +39,7 @@
 <script>
 import firebase from "firebase";
 export default {
+  name: "signIn",
   data() {
     return {
       email: "",
@@ -56,9 +55,11 @@ export default {
         .signInWithEmailAndPassword(this.email, this.password)
         .then(user => {
           console.log(user);
+          // alert(`logged by ${user.email}`);
+          this.$router.push("/home");
         })
         .catch(err => {
-          console.log(err);
+          console.log("login error", err);
           this.errorMessage = err.message;
         });
     }

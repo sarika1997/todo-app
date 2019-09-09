@@ -12,19 +12,12 @@
       <TodoList @delete-todo="deletetodo" v-if="listvisible" />
       <ul id="completed" v-if="showcompletedlist">
         <p id="completed-title" v-if="showcompletedlist">Todo's done:</p>
-        <li v-for="listItem in completedTodo" :key="listItem.id">
-          {{ listItem.value }}
-        </li>
+        <li v-for="listItem in completedTodo" :key="listItem.id">{{ listItem.value }}</li>
       </ul>
     </template>
     <div>
       <template>
-        <input
-          type="button"
-          value="completed"
-          class="footer"
-          @click="showCompleted"
-        />
+        <input type="button" value="completed" class="footer" @click="showCompleted" />
         <input type="button" value="all" class="footer" @click="showAll" />
       </template>
     </div>
@@ -92,6 +85,7 @@ export default {
 .todo {
   width: 400px;
   height: auto;
+  margin-top: 70px;
   margin-left: 32%;
   background-color: rgba(228, 218, 218, 0.513);
   padding: 5px 5px 10% 5px;
