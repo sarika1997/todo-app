@@ -1,23 +1,35 @@
 <template>
   <div class="todo">
     <h1 class="todo-heading">todo's</h1>
-    <input
-      type="text"
-      class="todo-input"
-      v-model="todovalue"
-      placeholder="enter your todo's"
-      @keyup.enter="saveTodo"
-    />
+    <label for="todo-item">
+      <input
+        type="text"
+        class="todo-input"
+        v-model="todovalue"
+        placeholder="enter your todo's"
+        @keyup.enter="saveTodo"
+      />
+      <button :disabled="todolength ? false : true" @click="addToFireStore">
+        add
+      </button>
+    </label>
     <template v-if="todolength">
       <TodoList @delete-todo="deletetodo" v-if="listvisible" />
       <ul id="completed" v-if="showcompletedlist">
         <p id="completed-title" v-if="showcompletedlist">Todo's done:</p>
-        <li v-for="listItem in completedTodo" :key="listItem.id">{{ listItem.value }}</li>
+        <li v-for="listItem in completedTodo" :key="listItem.id">
+          {{ listItem.value }}
+        </li>
       </ul>
     </template>
     <div>
       <template>
-        <input type="button" value="completed" class="footer" @click="showCompleted" />
+        <input
+          type="button"
+          value="completed"
+          class="footer"
+          @click="showCompleted"
+        />
         <input type="button" value="all" class="footer" @click="showAll" />
       </template>
     </div>
@@ -57,6 +69,9 @@ export default {
     showAll() {
       this.listvisible = true;
       this.showcompletedlist = false;
+    },
+    addToFireStore() {
+      this.$store.dispatch("addToFireStore");
     }
   },
   computed: {

@@ -1,12 +1,17 @@
 import Vue from "vue";
 import Vuex from "vuex";
+import firebase from "firebase";
+import db from "./firestore";
+
 Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
+    isLoggedIn: false,
     todoText: [],
     todolength: 0,
-    completedTodo: []
+    completedTodo: [],
+    currentUser: null
   },
   mutations: {
     SAVE_TODO(state, value) {
@@ -17,6 +22,7 @@ export default new Vuex.Store({
         id: date.getTime(),
         completed: false
       });
+
       state.todolength = state.todoText.length;
     },
     COMPLETED_TODO(state, item) {
@@ -42,6 +48,24 @@ export default new Vuex.Store({
         });
         console.log("deleted sucessfully");
       }
+    },
+    UPDATE_LOGIN(state, userInfo) {
+      console.log("is logged");
+      state.isLoggedIn = !state.isLoggedIn;
+      state.currentUser = userInfo;
+
+      console.log(userInfo);
+      console.log(state.isLoggedIn);
+    },
+    ADD_TO_FIRESTORE(state) {
+      db.collection("users")
+        .doc(firebase.auth().currentUser.uid)
+        .collection("todos")
+        .add({
+          todoList: state.todoText,
+          completedTodo: state.completedTodo
+        });
+      console.log("added to firestore successfully");
     }
   },
   actions: {
@@ -54,6 +78,12 @@ export default new Vuex.Store({
     },
     completetodo({ commit }, item) {
       commit("COMPLETED_TODO", item);
+    },
+    loggedUpdate({ commit }, userInfo) {
+      commit("UPDATE_LOGIN", userInfo);
+    },
+    addToFireStore({ commit }) {
+      commit("ADD_TO_FIRESTORE");
     }
   }
 });

@@ -50,6 +50,7 @@
 
 <script>
 import firebase from "firebase";
+import db from "../firestore";
 export default {
   name: "signUp",
   data() {
@@ -71,9 +72,22 @@ export default {
           this.userData.email,
           this.userData.password
         )
-        .then(user => {
-          console.log(user);
-          this.$router.push("home");
+        .then(() => {
+          db.collection("users")
+            .add({
+              username: this.userData.username,
+              email: this.userData.email,
+              password: this.userData.password
+            })
+            .then(() => {
+              console.log(this.userData);
+              this.$store.dispatch("loggedUpdate");
+              this.$router.replace("/home");
+            })
+            .catch(err => {
+              console.log("error in signUp: ", err);
+              this.errorMessage = err.message;
+            });
         })
         .catch(err => {
           this.errorMessage = err.message;

@@ -7,7 +7,7 @@ import SignUp from "@/views/signUp.vue";
 import firebase from "firebase";
 Vue.use(Router);
 
-let router = new Router({
+const router = new Router({
   mode: "history",
   base: process.env.BASE_URL,
   routes: [
@@ -16,7 +16,7 @@ let router = new Router({
       name: "home",
       component: Home,
       meta: {
-        requiresAuth: true
+        auth: true
       }
     },
     {
@@ -24,50 +24,35 @@ let router = new Router({
       name: "todo",
       component: todo,
       meta: {
-        requiresAuth: true
+        auth: true
       }
     },
     {
       path: "*",
       name: "signIn",
-      component: SignIn,
-      meta: {
-        requiresGuest: true
-      }
+      component: SignIn
     },
     {
       path: "/signUp",
       name: "signUp",
-      component: SignUp,
-      meta: {
-        requiresGuest: true
-      }
+      component: SignUp
     }
   ]
 });
 router.beforeEach((to, from, next) => {
-  if (to.matched.some(record =>
-    record.meta.requiresAuth
-  )) {
+  if (to.matched.some(record => record.meta.requiresAuth)) {
     if (!firebase.auth().currentUser) {
       next({
         name: "signIn",
         query: to.fullPath
-      })
+      });
     } else {
-      next();
-    }
-  } else if (to.matched.some(record =>
-    record.meta.requiresGuest
-  )) {
-    if (!firebase.auth().currentUser) {
       next({
-        name: "signIn",
-        query: to.fullPath
-      })
-    } else {
-      next();
+        name: "home"
+      });
     }
+  } else {
+    next();
   }
-})
+});
 export default router;

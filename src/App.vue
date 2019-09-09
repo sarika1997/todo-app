@@ -2,16 +2,20 @@
   <div id="app">
     <nav id="nav">
       <ul>
-        <li v-if="!isLoggedIn">
+        <li v-if="isLoggedIn">
           <router-link :to="{ name: 'home' }" class="link">home</router-link>
         </li>
         <li v-if="!isLoggedIn">
-          <router-link :to="{ name: 'signIn' }" class="link">signIn</router-link>
+          <router-link :to="{ name: 'signIn' }" class="link"
+            >signIn</router-link
+          >
         </li>
         <li v-if="!isLoggedIn">
-          <router-link :to="{ name: 'signUp' }" class="link">signUp</router-link>
+          <router-link :to="{ name: 'signUp' }" class="link"
+            >signUp</router-link
+          >
         </li>
-        <li v-if="!isLoggedIn">
+        <li v-if="isLoggedIn">
           <button v-on:click="logOut" class="link">logout</button>
         </li>
       </ul>
@@ -21,12 +25,12 @@
 </template>
 <script>
 import firebase from "firebase";
+import { mapState } from "vuex";
 export default {
   name: "logOut",
   data() {
     return {
-      isLoggedIn: false,
-      currentUser: false
+      currentUser: ""
     };
   },
   methods: {
@@ -35,16 +39,12 @@ export default {
         .auth()
         .signOut()
         .then(() => {
+          this.$store.dispatch("loggedUpdate");
           this.$router.push("/signIn");
         });
-    },
-    created() {
-      if (firebase.auth().currentUser) {
-        this.isLoggedIn = true;
-        this.currentUser = firebase.auth().currentUser.email;
-      }
     }
-  }
+  },
+  computed: mapState(["isLoggedIn"])
 };
 </script>
 <style>
