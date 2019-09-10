@@ -30,9 +30,7 @@
       <button id="loginbutton">login</button>
       <p>
         don't have an account?
-        <router-link :to="{ name: 'signUp' }" class="link"
-          >create new!</router-link
-        >
+        <router-link :to="{ name: 'signUp' }" class="link">create new!</router-link>
       </p>
     </form>
   </div>
@@ -58,7 +56,7 @@ export default {
         .then(userInfo => {
           console.log(userInfo);
           alert(`logged by ${userInfo.user.email}`);
-          this.$store.dispatch("loggedUpdate", userInfo.user);
+          this.$store.dispatch("loggedInUpdate", userInfo.user);
           this.$router.push("/home");
         })
         .catch(err => {

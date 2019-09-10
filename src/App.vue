@@ -6,14 +6,10 @@
           <router-link :to="{ name: 'home' }" class="link">home</router-link>
         </li>
         <li v-if="!isLoggedIn">
-          <router-link :to="{ name: 'signIn' }" class="link"
-            >signIn</router-link
-          >
+          <router-link :to="{ name: 'signIn' }" class="link">signIn</router-link>
         </li>
         <li v-if="!isLoggedIn">
-          <router-link :to="{ name: 'signUp' }" class="link"
-            >signUp</router-link
-          >
+          <router-link :to="{ name: 'signUp' }" class="link">signUp</router-link>
         </li>
         <li v-if="isLoggedIn">
           <button v-on:click="logOut" class="link">logout</button>
@@ -39,7 +35,7 @@ export default {
         .auth()
         .signOut()
         .then(() => {
-          this.$store.dispatch("loggedUpdate");
+          this.$store.dispatch("loggedOutUpdate");
           this.$router.push("/signIn");
         });
     }
