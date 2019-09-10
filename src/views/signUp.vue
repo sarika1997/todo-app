@@ -81,7 +81,7 @@ export default {
             })
             .then(() => {
               console.log(this.userData);
-              this.$store.dispatch("SignUpUpdate");
+              this.$store.dispatch("loggedUpdate");
               this.$router.replace("/home");
             })
             .catch(err => {

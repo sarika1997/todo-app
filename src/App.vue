@@ -39,7 +39,7 @@ export default {
         .auth()
         .signOut()
         .then(() => {
-          this.$store.dispatch("logOut");
+          this.$store.dispatch("loggedUpdate");
           this.$router.push("/signIn");
         });
     }

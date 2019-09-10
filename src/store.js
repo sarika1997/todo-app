@@ -61,42 +61,23 @@ export default new Vuex.Store({
     async UPDATE_LOGIN(state, userInfo) {
       console.log("is logged");
       console.log(state.todoText);
-      state.isLoggedIn = true;
+      state.isLoggedIn = !state.isLoggedIn;
       state.currentUser = userInfo;
-      console.log(userInfo);
-      const userRef = await db.collection("users").get();
-      console.log(userRef);
-      console.log(state.isLoggedIn);
       if (state.isLoggedIn) {
-        userRef.docs.map(userDocument => {
-          console.log(userDocument.id);
-          console.log(state.currentUser.uid);
-          if (state.currentUser.uid === userDocument.id) {
-            //console.log(userDocument.id);
-            const ref = db
-              .collection("users")
-              .doc(userInfo.uid)
-              .collection("todos")
-              .get();
-            ref.docs.map(document => {
-              return document.data();
-            });
-          }
+        const ref = await db
+          .collection("users")
+          .doc(userInfo.uid)
+          .collection("todos")
+          .get();
+
+        console.log(ref);
+        ref.docs.map(document => {
+          state.todoText.push(document.data());
         });
       }
       console.log(state.todoText);
-    },
-    UPDATE_LOGOUT(state) {
-      state.isLoggedIn = false;
-      state.todoText = [];
-      state.currentUser = null;
-    },
-    SIGNUP_UPDATE(state, userInfo) {
-      state.isLoggedIn = true;
-      state.currentUser = userInfo;
-      db.collection("users")
-        .doc(userInfo.id)
-        .collection("todos");
+      console.log(userInfo);
+      console.log(state.isLoggedIn);
     }
   },
   actions: {
@@ -112,12 +93,6 @@ export default new Vuex.Store({
     },
     loggedUpdate({ commit }, userInfo) {
       commit("UPDATE_LOGIN", userInfo);
-    },
-    logOut({ commit }) {
-      commit("UPDATE_LOGOUT");
-    },
-    SignUpUpdate({ commit }, userInfo) {
-      commit("SIGNUP_UPDATE", userInfo);
     }
   }
 });

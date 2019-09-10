@@ -10,7 +10,7 @@
         @keyup.enter="saveTodo"
       />
     </label>
-    <template>
+    <template v-if="todolength">
       <TodoList @delete-todo="deletetodo" v-if="listvisible" />
       <ul id="completed" v-if="showcompletedlist">
         <p id="completed-title" v-if="showcompletedlist">Todo's done:</p>
@@ -44,7 +44,7 @@ export default {
     return {
       todovalue: "",
       viewlist: false,
-      listvisible: false,
+      listvisible: true,
       showcompletedlist: false
     };
   },
@@ -69,7 +69,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(["completedTodo", "todoText"])
+    ...mapState(["todolength", "completedTodo"])
   }
 };
 </script>
