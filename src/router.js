@@ -2,7 +2,7 @@ import Vue from "vue";
 import Router from "vue-router";
 import todo from "@/components/todo.vue";
 import Home from "@/views/Home.vue";
-import SignIn from "@/views/signIn.vue";
+import signIn from "@/views/signIn.vue";
 import SignUp from "@/views/signUp.vue";
 import firebase from "firebase";
 Vue.use(Router);
@@ -30,7 +30,7 @@ const router = new Router({
     {
       path: "*",
       name: "signIn",
-      component: SignIn
+      component: signIn
     },
     {
       path: "/signUp",
