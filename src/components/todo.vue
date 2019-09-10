@@ -10,23 +10,16 @@
         @keyup.enter="saveTodo"
       />
     </label>
-    <template v-if="todolength">
+    <template v-if="todoText">
       <TodoList @delete-todo="deletetodo" v-if="listvisible" />
       <ul id="completed" v-if="showcompletedlist">
         <p id="completed-title" v-if="showcompletedlist">Todo's done:</p>
-        <li v-for="listItem in completedTodo" :key="listItem.id">
-          {{ listItem.value }}
-        </li>
+        <li v-for="listItem in completedTodo" :key="listItem.id">{{ listItem.value }}</li>
       </ul>
     </template>
     <div>
       <template>
-        <input
-          type="button"
-          value="completed"
-          class="footer"
-          @click="showCompleted"
-        />
+        <input type="button" value="completed" class="footer" @click="showCompleted" />
         <input type="button" value="all" class="footer" @click="showAll" />
       </template>
     </div>
@@ -36,6 +29,7 @@
 <script>
 import TodoList from "@/components/todoList.vue";
 import { mapState } from "vuex";
+
 export default {
   components: {
     TodoList
@@ -43,9 +37,7 @@ export default {
   data() {
     return {
       todovalue: "",
-      viewlist: false,
-      listvisible: true,
-      showcompletedlist: false
+      viewlist: false
     };
   },
   methods: {
@@ -60,16 +52,19 @@ export default {
       this.$store.dispatch("deletetodo", item);
     },
     showCompleted() {
-      this.listvisible = false;
-      this.showcompletedlist = true;
+      this.$store.dispatch("changeBoolean");
     },
     showAll() {
-      this.listvisible = true;
-      this.showcompletedlist = false;
+      this.$store.dispatch("changeBoolean");
     }
   },
   computed: {
-    ...mapState(["todolength", "completedTodo"])
+    ...mapState([
+      "todoText",
+      "completedTodo",
+      "listvisible",
+      "showcompletedlist"
+    ])
   }
 };
 </script>

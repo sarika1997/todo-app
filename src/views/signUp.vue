@@ -79,9 +79,9 @@ export default {
               email: this.userData.email,
               password: this.userData.password
             })
-            .then(() => {
+            .then(userInfo => {
               console.log(this.userData);
-              this.$store.dispatch("loggedUpdate");
+              this.$store.dispatch("signUpUpdate", userInfo.user);
               this.$router.replace("/home");
             })
             .catch(err => {

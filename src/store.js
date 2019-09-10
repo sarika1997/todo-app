@@ -7,11 +7,14 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
+    docsId: [],
     isLoggedIn: false,
     todoText: [],
     todolength: 0,
     completedTodo: [],
-    currentUser: null
+    currentUser: null,
+    listvisible: true,
+    showcompletedlist: false
   },
   mutations: {
     async SAVE_TODO(state, value) {
@@ -34,7 +37,16 @@ export default new Vuex.Store({
       console.log("added todo to firestore successfully");
       state.todolength = state.todoText.length;
     },
-    COMPLETED_TODO(state, item) {
+    async COMPLETED_TODO(state, item) {
+      await db
+        .collection("users")
+        .doc(firebase.auth().currentUser.uid)
+        .collection("todos")
+        .doc(item.id)
+        .update({
+          comlpeted: !item.completed
+        });
+
       state.todoText.filter(todo => {
         if (todo.id === item.id) {
           todo.completed = !todo.completed;
@@ -46,7 +58,14 @@ export default new Vuex.Store({
       });
       console.log(state.todoText);
     },
-    DELETE_TODO(state, item) {
+    async DELETE_TODO(state, item) {
+      await db
+        .collection("users")
+        .doc(firebase.auth().currentUser.uid)
+        .collection("todos")
+        .doc(item.id)
+        .delete();
+
       const index = state.todoText.indexOf(item);
       state.todoText.splice(index, 1);
       if (state.completedTodo.length) {
@@ -69,15 +88,32 @@ export default new Vuex.Store({
           .doc(userInfo.uid)
           .collection("todos")
           .get();
-
         console.log(ref);
-        ref.docs.map(document => {
-          state.todoText.push(document.data());
-        });
+        if (ref.docs) {
+          ref.docs.map(document => {
+            var todo = document.data();
+            todo.id = document.id;
+            state.todoText.push(todo);
+            state.todolength = document.data().length;
+          });
+        }
       }
       console.log(state.todoText);
       console.log(userInfo);
       console.log(state.isLoggedIn);
+    },
+    SIGNUP_UPDATE(state, userInfo) {
+      state.isLoggedIn = !state.isLoggedIn;
+      state.currentUser = userInfo;
+    },
+    UPDATE_LOGOUT(state) {
+      state.isLoggedIn = false;
+      state.currentUser = null;
+      state.todoText = [];
+    },
+    CHANGE_BOOLEAN(state) {
+      state.listvisible = !state.listvisible;
+      state.showcompletedlist = !state.showcompletedlist;
     }
   },
   actions: {
@@ -91,8 +127,17 @@ export default new Vuex.Store({
     completetodo({ commit }, item) {
       commit("COMPLETED_TODO", item);
     },
-    loggedUpdate({ commit }, userInfo) {
+    loggedInUpdate({ commit }, userInfo) {
       commit("UPDATE_LOGIN", userInfo);
+    },
+    signUpUpdate({ commit }, userInfo) {
+      commit("SIGNUP_UPDATE", userInfo);
+    },
+    loggedOutUpdate({ commit }) {
+      commit("UPDATE_LOGOUT");
+    },
+    changeBoolean({ commit }) {
+      commit("CHANGE_BOOLEAN");
     }
   }
 });
