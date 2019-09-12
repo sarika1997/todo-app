@@ -44,7 +44,7 @@ export default new Vuex.Store({
         .collection("todos")
         .doc(item.id)
         .update({
-          comlpeted: !item.completed
+          completed: !item.completed
         });
 
       state.todoText.filter(todo => {

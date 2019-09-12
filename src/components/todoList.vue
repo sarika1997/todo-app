@@ -3,7 +3,7 @@
     <p v-if="!todoText">There are no todo's to show</p>
     <ul v-else>
       <p id="title">Todo list:</p>
-      <li v-for="(item,index) in todoText" :key="item.id" :index="index">
+      <li v-for="(item, index) in todoText" :key="item.id" :index="index">
         <input type="checkbox" @change="onClickedItem(item)" />
         {{ item.value }}
         <img
